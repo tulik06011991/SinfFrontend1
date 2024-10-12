@@ -54,7 +54,7 @@ const url = axios.create({
     formData.append('subjectId', selectedSubject); // Tanlangan fan ID'sini qo'shamiz
 
     try {
-      const response = await url.post('https://sinfbackend2.onrender.com/api/upload', formData, {
+      const response = await url.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
