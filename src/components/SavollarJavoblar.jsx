@@ -16,7 +16,7 @@ const Quiz = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/subjects'); // Fanlar ro'yxatini olish
+                const response = await axios.get('https://sinfbackend1.onrender.com/api/subjects'); // Fanlar ro'yxatini olish
                 setSubjects(response.data); // Fanlar ro'yxatini yuklash
             } catch (error) {
                 console.error('Fanlarni olishda xato:', error);
@@ -39,7 +39,7 @@ const Quiz = () => {
             if (!selectedSubject) return; // Fanning ID'si bo'lmasa, hech narsa qilmaslik
 
             try {
-                const response = await axios.get(`http://localhost:5000/api/questions/subject/${selectedSubject}`); // Tanlangan fanga ko'ra savollarni olish
+                const response = await axios.get(`https://sinfbackend1.onrender.com/api/questions/subject/${selectedSubject}`); // Tanlangan fanga ko'ra savollarni olish
                 setQuestions(response.data); // Savollarni yuklash
             } catch (error) {
                 console.error('Savollarni olishda xato:', error);
@@ -73,7 +73,7 @@ const Quiz = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:5000/api/submit-answers',
+                'https://sinfbackend1.onrender.com/api/submit-answers',
                 {
                     subjectId: selectedSubject,
                     answers: selectedAnswers,
