@@ -11,7 +11,10 @@ const CreateSubject = () => {
 
   // Backenddan adminlar ro'yxatini olish uchun useEffect
 
-
+  const url = axios.create({
+    baseURL: 'https://sinfbackend2.onrender.com',
+    withCredentials: true,
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -24,7 +27,7 @@ const CreateSubject = () => {
     const fetchAdmins = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('https://sinfbackend2.onrender.com/api/admins',
+        const response = await url.get('/api/admins',
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,7 +48,7 @@ const CreateSubject = () => {
     const token = localStorage.getItem('token');
     
     try {
-        const response = await axios.post('https://sinfbackend2.onrender.com/api/create',
+        const response = await url.post('/api/create',
             { name, adminId }, // Ma'lumotlarni birinchi parametr sifatida yuboramiz
             {
                 headers: {

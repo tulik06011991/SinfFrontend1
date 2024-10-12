@@ -12,12 +12,17 @@ const Login = () => {
     const [fanId, setFanId] = useState({});
     
 
+    const url = axios.create({
+        baseURL: 'https://sinfbackend2.onrender.com',
+        withCredentials: true,
+      });
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true); // Formani yuborishda loading holatini yoqish
         try {
-            const response = await axios.post('https://sinfbackend2.onrender.com/api/login', { email, password });
-localStorage.setItem('userName', response.data.name)
+            const response = await url.post('/api/login', { email, password });
+            localStorage.setItem('userName', response.data.name)
 
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
@@ -47,7 +52,7 @@ localStorage.setItem('userName', response.data.name)
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-600">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
                 <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Login</h2>
                 {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
                 {loading && (
@@ -63,7 +68,7 @@ localStorage.setItem('userName', response.data.name)
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -74,7 +79,7 @@ localStorage.setItem('userName', response.data.name)
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>

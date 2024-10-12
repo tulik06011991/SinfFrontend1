@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const AdminCrud = () => {
+  const url = axios.create({
+    baseURL: 'https://sinfbackend2.onrender.com',
+    withCredentials: true,
+  });
+
   const [admins, setAdmins] = useState([]);
   const [newAdmin, setNewAdmin] = useState({
     name: '',
@@ -10,9 +15,9 @@ const AdminCrud = () => {
     password: '',
     subject: ''
   });
+
   const [editAdmin, setEditAdmin] = useState(null);
   const navigate = useNavigate();
-  // Initialize useNavigate
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -21,94 +26,82 @@ const AdminCrud = () => {
     }
   }, [navigate]);
 
-  // Barcha adminlarni olish
   useEffect(() => {
     fetchAdmins();
   }, []);
 
   const fetchAdmins = async () => {
-    const token  = localStorage.getItem('token') 
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.get('https://sinfbackend2.onrender.com/api/admins',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await url.get('/api/admins', {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      ); // Barcha adminlarni oladi
+      });
       setAdmins(response.data);
     } catch (error) {
       console.error('Adminlarni olishda xato:', error);
     }
   };
 
-  // Yangi admin yaratish
   const createAdmin = async () => {
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
     try {
-        const response = await axios.post('https://sinfbackend2.onrender.com/api/admin',
-            newAdmin, // Bu yerda ma'lumotlar
-            {
-                headers: {
-                    Authorization: `Bearer ${token}` // Tokenni headers'ga qo'shamiz
-                },
-            });
-        setAdmins([...admins, response.data.newAdmin]);
-        setNewAdmin({ name: '', email: '', password: '', subject: '' });
+      const response = await url.post('/api/admin', newAdmin, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setAdmins([...admins, response.data.newAdmin]);
+      setNewAdmin({ name: '', email: '', password: '', subject: '' });
     } catch (error) {
-        console.error('Admin yaratishda xato:', error);
+      console.error('Admin yaratishda xato:', error);
     }
-};
+  };
 
-  // Adminni yangilash
   const updateAdmin = async (id) => {
-    const token  = localStorage.getItem('token') 
+    const token = localStorage.getItem('token');
     try {
-      const response = await axios.put(`https://sinfbackend2.onrender.com/api/admin/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }, editAdmin);
+      const response = await url.put(`/api/admin/${id}`, editAdmin, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const updatedAdmins = admins.map((admin) =>
         admin._id === id ? response.data.updatedAdmin : admin
       );
       setAdmins(updatedAdmins);
-      setEditAdmin(null); // Edit rejimini tugatish
+      setEditAdmin(null);
     } catch (error) {
       console.error('Adminni yangilashda xato:', error);
     }
   };
 
-  // Adminni o'chirish
   const deleteAdmin = async (id) => {
-    const token  = localStorage.getItem('token') 
+    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`https://sinfbackend2.onrender.com/api/admin/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      await url.delete(`/api/admin/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       setAdmins(admins.filter((admin) => admin._id !== id));
     } catch (error) {
-      console.error('Adminni o\'chirishda xato:', error);
+      console.error("Adminni o'chirishda xato:", error);
     }
   };
 
-  // Inputlar o'zgarishi
   const handleChange = (e) => {
     setNewAdmin({
       ...newAdmin,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleEditChange = (e) => {
     setEditAdmin({
       ...editAdmin,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -116,7 +109,6 @@ const AdminCrud = () => {
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h1 style={{ textAlign: 'center', color: '#333' }}>Admin CRUD Operatsiyalari</h1>
 
-      {/* Admin yaratish */}
       <div style={{
         backgroundColor: '#f9f9f9',
         padding: '20px',
@@ -124,7 +116,7 @@ const AdminCrud = () => {
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         marginBottom: '20px',
         maxWidth: '600px',
-        margin: '0 auto'
+        margin: '0 auto',
       }}>
         <h3 style={{ textAlign: 'center' }}>Yangi Admin Qo'shish</h3>
         <input
@@ -162,13 +154,12 @@ const AdminCrud = () => {
         <button onClick={createAdmin} style={buttonStyle}>Admin Yaratish</button>
       </div>
 
-      {/* Admin ro'yxati */}
       <h2 style={{ textAlign: 'center', color: '#555' }}>Adminlar Ro'yxati</h2>
       <ul style={{
         listStyle: 'none',
         padding: 0,
         maxWidth: '600px',
-        margin: '0 auto'
+        margin: '0 auto',
       }}>
         {admins.map((admin) => (
           <li key={admin._id} style={{
@@ -179,7 +170,7 @@ const AdminCrud = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
           }}>
             <span>
               <strong>{admin.name}</strong> ({admin.email}) - Fan: {admin.subject}
@@ -192,7 +183,6 @@ const AdminCrud = () => {
         ))}
       </ul>
 
-      {/* Adminni yangilash */}
       {editAdmin && (
         <div style={{
           backgroundColor: '#f9f9f9',
@@ -200,7 +190,7 @@ const AdminCrud = () => {
           borderRadius: '8px',
           boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
           maxWidth: '600px',
-          margin: '20px auto'
+          margin: '20px auto',
         }}>
           <h3 style={{ textAlign: 'center' }}>Adminni Yangilash</h3>
           <input
@@ -231,7 +221,6 @@ const AdminCrud = () => {
         </div>
       )}
 
-      {/* Dashboardga o'tish uchun tugma */}
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <button onClick={() => navigate('/superadmin')} style={buttonStyle}>Superadminga O'tish</button>
       </div>
@@ -239,7 +228,6 @@ const AdminCrud = () => {
   );
 };
 
-// Stil yozuvlari
 const inputStyle = {
   width: '100%',
   padding: '10px',

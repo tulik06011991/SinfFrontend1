@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash } from 'react-icons/fa';
 
 const Dashboard = () => {
+
+
+
+  
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -12,7 +16,11 @@ const Dashboard = () => {
   const [subjectDetails, setSubjectDetails] = useState(null);
   const [savollar, setsavollar] = useState({});
   const navigate = useNavigate();
-
+  
+  const url = axios.create({
+    baseURL: 'https://sinfbackend2.onrender.com',
+    withCredentials: true,
+  });
   // Token tekshiruvi va yo'naltirish
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -36,8 +44,8 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await axios.post(
-        `https://sinfbackend2.onrender.com/api/subjects`,
+      const response = await url.post(
+        `/api/subjects`,
         { fanId },
         {
           headers: {
@@ -70,7 +78,7 @@ const Dashboard = () => {
       }
 
       // Foydalanuvchini o'chirish so'rovi
-      await axios.delete(`https://sinfbackend2.onrender.com/admin/users/${id}`, {
+      await url.delete(`/admin/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -103,7 +111,7 @@ const handleDelete = async (id) => {
       throw new Error('Token topilmadi. Iltimos, qayta login qiling.');
     }
 
-    await axios.delete(`https://sinfbackend2.onrender.com/admin/subjects/${id}`, {
+    await url.delete(`/admin/subjects/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -134,8 +142,8 @@ const handleDelete = async (id) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `https://sinfbackend2.onrender.com/admin/subjects/${subject._id}`,
+      const response = await url.get(
+        `/admin/subjects/${subject._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

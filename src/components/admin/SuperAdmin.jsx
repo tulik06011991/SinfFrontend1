@@ -8,6 +8,12 @@ const SuperadminPanel = () => {
   const [newUser, setNewUser] = useState('');
   const navigate = useNavigate()
 
+
+  const url = axios.create({
+    baseURL: 'https://sinfbackend2.onrender.com',
+    withCredentials: true,
+  });
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -19,7 +25,7 @@ const SuperadminPanel = () => {
     const fetchUsers = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('https://sinfbackend2.onrender.com/api/dashboard', {
+        const response = await url.get('/api/dashboard', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -36,7 +42,7 @@ const SuperadminPanel = () => {
   const createUser = async () => {
     const user = { name: newUser };
     try {
-      const response = await axios.post('https://sinfbackend2.onrender.com/api/dashboard',
+      const response = await url.post('/api/dashboard',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,7 +58,7 @@ const SuperadminPanel = () => {
   const deleteUser = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://sinfbackend2.onrender.com/api/users/${id}`,
+      await url.delete(`/api/users/${id}`,
 
         {
           headers: {
