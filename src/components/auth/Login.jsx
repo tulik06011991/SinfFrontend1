@@ -16,7 +16,7 @@ const Login = () => {
         e.preventDefault();
         setLoading(true); // Formani yuborishda loading holatini yoqish
         try {
-            const response = await axios.post('https://sinfbackend1.onrender.com/api/login', { email, password });
+            const response = await axios.post('https://sinfbackend2.onrender.com/api/login', { email, password });
 localStorage.setItem('userName', response.data.name)
 
             if (response.data.token) {

@@ -21,7 +21,7 @@ const navigate = useNavigate()
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const response = await axios.get('https://sinfbackend1.onrender.com/api/subjects'); // Fanlarni olish
+        const response = await axios.get('https://sinfbackend2.onrender.com/api/subjects'); // Fanlarni olish
         setSubjects(response.data); // Fanlarni state ga o'rnatamiz
       } catch (error) {
         console.error('Fanlarni olishda xato:', error);
@@ -49,7 +49,7 @@ const navigate = useNavigate()
     formData.append('subjectId', selectedSubject); // Tanlangan fan ID'sini qo'shamiz
 
     try {
-      const response = await axios.post('https://sinfbackend1.onrender.com/api/upload', formData, {
+      const response = await axios.post('https://sinfbackend2.onrender.com/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
