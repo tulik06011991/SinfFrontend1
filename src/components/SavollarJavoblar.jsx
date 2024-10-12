@@ -12,11 +12,17 @@ const Quiz = () => {
     const [result, setResult] = useState(null); // Natijalar
     const navigate = useNavigate(); // Yo'naltirish uchun hook
 
+
+    const url = axios.create({
+        baseURL: 'https://sinfbackend2.onrender.com',
+        withCredentials: true,
+      });
+
     // Fanlar ro'yxatini olish uchun endpoint
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const response = await axios.get('https://sinfbackend2.onrender.com/api/subjects'); // Fanlar ro'yxatini olish
+                const response = await url.get('/api/subjects'); // Fanlar ro'yxatini olish
                 setSubjects(response.data); // Fanlar ro'yxatini yuklash
             } catch (error) {
                 console.error('Fanlarni olishda xato:', error);
@@ -39,7 +45,7 @@ const Quiz = () => {
             if (!selectedSubject) return; // Fanning ID'si bo'lmasa, hech narsa qilmaslik
 
             try {
-                const response = await axios.get(`https://sinfbackend2.onrender.com/api/questions/subject/${selectedSubject}`); // Tanlangan fanga ko'ra savollarni olish
+                const response = await url.get(`/api/questions/subject/${selectedSubject}`); // Tanlangan fanga ko'ra savollarni olish
                 setQuestions(response.data); // Savollarni yuklash
             } catch (error) {
                 console.error('Savollarni olishda xato:', error);
@@ -72,8 +78,8 @@ const Quiz = () => {
         const userName = decodedToken.userName; // Foydalanuvchi ismi
 
         try {
-            const response = await axios.post(
-                'https://sinfbackend2.onrender.com/api/submit-answers',
+            const response = await url.post(
+                '/api/submit-answers',
                 {
                     subjectId: selectedSubject,
                     answers: selectedAnswers,
