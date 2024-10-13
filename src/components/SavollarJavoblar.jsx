@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode'; // To'g'ri modullari
 
 const Quiz = () => {
+
+    
+    
     const [subjects, setSubjects] = useState([]); // Fanlar ro'yxati
     const [selectedSubject, setSelectedSubject] = useState(''); // Tanlangan fanning ID'si
     const [questions, setQuestions] = useState([]); // Savollar ro'yxati
@@ -11,20 +14,21 @@ const Quiz = () => {
     const [submissionStatus, setSubmissionStatus] = useState(''); // Javoblarni yuborish statusi
     const [result, setResult] = useState(null); // Natijalar
     const navigate = useNavigate(); // Yo'naltirish uchun hook
-
-
+    
     const url = axios.create({
         baseURL: 'https://sinfbackend2.onrender.com',
         withCredentials: true,
       });
-
     // Fanlar ro'yxatini olish uchun endpoint
     useEffect(() => {
         const fetchSubjects = async () => {
-            
             try {
                 const response = await url.get('/api/subjects',
-                   
+                    {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      },
                 ); // Fanlar ro'yxatini olish
                 setSubjects(response.data); // Fanlar ro'yxatini yuklash
             } catch (error) {
@@ -45,7 +49,6 @@ const Quiz = () => {
     // Tanlangan fanga ko'ra savollarni olish
     useEffect(() => {
         const fetchQuestions = async () => {
-            const token = localStorage.getItem('token')
             if (!selectedSubject) return; // Fanning ID'si bo'lmasa, hech narsa qilmaslik
 
             try {
@@ -54,7 +57,7 @@ const Quiz = () => {
                         headers: {
                           Authorization: `Bearer ${token}`,
                         },
-                      }
+                      },
                 ); // Tanlangan fanga ko'ra savollarni olish
                 setQuestions(response.data); // Savollarni yuklash
             } catch (error) {

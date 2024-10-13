@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { TailSpin } from 'react-loader-spinner';
-import { useNavigate } from 'react-router-dom';
-import { FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Router uchun
+import { FaTrash } from 'react-icons/fa'; // Ikonlar uchun
 
 const Dashboard = () => {
   const [subjects, setSubjects] = useState([]);
@@ -10,16 +10,16 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectDetails, setSubjectDetails] = useState(null);
-  const [savollar, setsavollar] = useState([]);
+  const [savollar, setsavollar] = useState({})
   const navigate = useNavigate();
   const fanId = localStorage.getItem('fanId');
-  
-  // Axios URL yaratish
-  const url = axios.create({
-    baseURL: 'https://sinfbackend2.onrender.com',
-    withCredentials: true,
-  });
-  
+console.log(fanId)
+
+const url = axios.create({
+  baseURL: 'https://sinfbackend2.onrender.com',
+  withCredentials: true,
+});
+
   // Token tekshiruvi va yo'naltirish
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -27,15 +27,14 @@ const Dashboard = () => {
       navigate('/'); // Token bo'lmasa login sahifasiga yo'naltirish
     }
   }, [navigate]);
-
+  
   // Fanlar ro'yxatini olish
   const fetchSubjects = async () => {
     setLoading(true);
     setError('');
-
+    
     try {
       const token = localStorage.getItem('token');
-console.log(fanId)
 
       if (!token) {
         navigate('/');
@@ -43,23 +42,83 @@ console.log(fanId)
         return;
       }
 
-      const response = await url.get(`/api/subjects/${fanId}`
-        
-      );
+      const response = await url.post(`/api/subjects`, { fanId }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setSubjects(response.data.subjects);
-      if (response.data.subjects.length === 0) {
-        setError("Fanlar topilmadi.");
-      }
     } catch (err) {
-      setError("Ma'lumotlarni olishda xatolik yuz berdi.");
+      setError('Ma\'lumotlarni olishda xatolik yuz berdi.');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Tanlangan fanga oid savollarni olish
+  const handleDeleteUsers = async (id) => {
+    setLoading(true); // Yuklanishni boshqarish uchun
+
+    try {
+      const token = localStorage.getItem('token'); // Tokenni olish
+
+      if (!token) {
+        throw new Error('Token topilmadi. Iltimos, qayta login qiling.');
+      }
+
+      // DELETE metodidan foydalanib, foydalanuvchini o'chirish
+      await url.delete(`/admin/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Tokenni so'rovga qo'shish
+        },
+      });
+
+      // O'chirilgandan keyin qaysidir ma'lumotni yangilash yoki ma'lumotlarni qayta yuklash
+      console.log('Foydalanuvchi muvaffaqiyatli o\'chirildi');
+      // Bu yerda boshqa amallarni bajarishingiz mumkin (ma'lumotlarni qayta yuklash kabi)
+
+    } catch (err) {
+      console.error('Xatolik yuz berdi:', err.message); // Xatolikni konsolga chiqarish
+    } finally {
+      setLoading(false); // Yuklanishni to'xtatish
+    }
+  };
+
+
+  const handleDelete = async (id) => {
+    setLoading(true); // Yuklanishni boshqarish uchun
+
+    try {
+      const token = localStorage.getItem('token');
+      // Tokenni olish
+
+      if (!token) {
+        throw new Error('Token topilmadi. Iltimos, qayta login qiling.');
+      }
+
+      // DELETE metodi orqali savol yoki foydalanuvchini o'chirish
+      await url.delete(`/admin/subject/${fanId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Tokenni yuborish
+        },
+      });
+
+      // Ma'lumotlarni yangilash (foydalanuvchilar va savollarni qayta yuklash)
+      // Bu yerda callback yoki yangilash amallarini bajaring
+      console.log('O\'chirish muvaffaqiyatli yakunlandi.');
+      // Masalan, setUsers(yangiFoydalanuvchilar) yoki setQuestions(yangiSavollar) funksiyalaridan foydalanishingiz mumkin.
+
+    } catch (err) {
+      setError('O\'chirishda xatolik yuz berdi.'); // Xatolikni ko'rsatish
+      console.error(err);
+    } finally {
+      setLoading(false); // Yuklanishni to'xtatish
+    }
+  };
+
+
+  // Tanlangan fan bo'yicha savollarni olish
   const handleSubjectClick = async (subject) => {
     setLoading(true);
     setSelectedSubject(subject);
@@ -68,20 +127,21 @@ console.log(fanId)
 
     try {
       const token = localStorage.getItem('token');
-      const response = await url.get(`/admin/subjects/${subject._id}`, {
+      const response = await axios.get(`/admin/subjects/${subject._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setsavollar(response.data.questionsWithOptions);
+      setsavollar(response.data.questionsWithOptions)
+      response.data.questionsWithOptions.forEach(question => {
+        console.log(question._questionId); // Har bir savolning _questionId sini chiqarish
+      });
+
+
       setSubjectDetails(response.data);
-      
-      if (response.data.questionsWithOptions.length === 0) {
-        setError("Savollar topilmadi.");
-      }
     } catch (err) {
-      setError("Ma'lumotlarni olishda xatolik yuz berdi.");
+      setError('Ma\'lumotlarni olishda xatolik yuz berdi.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -110,6 +170,7 @@ console.log(fanId)
 
         {error && <div className="text-red-600 text-center mb-6">{error}</div>}
 
+        {/* Fanlar ro'yxati */}
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {subjects.length > 0 ? (
             subjects.map((subject) => (
@@ -118,11 +179,11 @@ console.log(fanId)
                 onClick={() => handleSubjectClick(subject)}
                 className="cursor-pointer p-4 border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 text-gray-800"
               >
-                {subject.name} {/* Fan nomi buttonida ko'rinadi */}
+                {subject.name}
               </li>
             ))
           ) : (
-            <li className="text-gray-500 italic text-center col-span-full">{error || "Fanlar topilmadi."}</li>
+            <li className="text-gray-500 italic text-center col-span-full">Fanlar topilmadi.</li>
           )}
         </ul>
 
@@ -130,6 +191,7 @@ console.log(fanId)
           <div className="mt-8 bg-gray-100 p-6 rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold text-gray-700 mb-6">Savollar va Foydalanuvchilar</h3>
 
+            {/* Savollar jadvali */}
             <h4 className="text-lg font-bold mt-6">Savollar:</h4>
             <table className="table-auto w-full bg-white shadow-lg rounded-lg">
               <thead className="bg-indigo-600 text-white">
@@ -138,11 +200,13 @@ console.log(fanId)
                   <th className="px-4 py-2">Variantlar</th>
                   <th className="px-4 py-2">Amallar</th>
                 </tr>
+
               </thead>
               <tbody>
-                {savollar.length > 0 ? (
-                  savollar.map((question, index) => (
-                    <tr key={index} className="border-b border-gray-300">
+                {savollar
+                  && savollar.length > 0 ? (
+                  savollar.map((question) => (
+                    <tr key={question._id} className="border-b border-gray-300">
                       <td className="px-4 py-2">{question.questionText}</td>
                       <td className="px-4 py-2">
                         <ul>
@@ -155,7 +219,7 @@ console.log(fanId)
                       </td>
                       <td className="px-4 py-2 text-center">
                         <button
-                          onClick={() => handleDelete(question._id)}
+                          onClick={() => handleDelete()}
                           className="text-red-600 hover:text-red-800"
                         >
                           <FaTrash />
@@ -165,14 +229,13 @@ console.log(fanId)
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" className="text-gray-500 italic text-center py-4">
-                      Savollar topilmadi.
-                    </td>
+                    <td colSpan="3" className="text-gray-500 italic text-center py-4">Savollar topilmadi.</td>
                   </tr>
                 )}
               </tbody>
             </table>
 
+            {/* Foydalanuvchilar jadvali */}
             <h4 className="text-lg font-bold mt-6">Foydalanuvchilar:</h4>
             <table className="table-auto w-full bg-white shadow-lg rounded-lg">
               <thead className="bg-indigo-600 text-white">
@@ -183,11 +246,11 @@ console.log(fanId)
                 </tr>
               </thead>
               <tbody>
-                {subjectDetails.userResults.length > 0 ? (
+                {subjectDetails.userResults && subjectDetails.userResults.length > 0 ? (
                   subjectDetails.userResults.map((result) => (
-                    <tr key={result.userId} className="border-b border-gray-300">
+                    <tr key={result.user} className="border-b border-gray-300">
                       <td className="px-4 py-2">{result.userName}</td>
-                      <td className="px-4 py-2">{result.correctAnswersCount}/{result.totalQuestions}</td>
+                      <td className="px-4 py-2">{result.correctAnswersCount}/{result.totalQuestions} to'g'ri</td>
                       <td className="px-4 py-2 text-center">
                         <button
                           onClick={() => handleDeleteUsers(result.userId)}
@@ -200,13 +263,19 @@ console.log(fanId)
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" className="text-gray-500 italic text-center py-4">
-                      Foydalanuvchilar topilmadi.
-                    </td>
+                    <td colSpan="3" className="text-gray-500 italic text-center py-4">Foydalanuvchilar natijalari topilmadi.</td>
                   </tr>
                 )}
               </tbody>
             </table>
+
+          </div>
+        )}
+
+        {/* Tanlangan fan haqida ma'lumot bo'lmasa */}
+        {!selectedSubject && !loading && (
+          <div className="mt-8 text-center text-gray-600">
+            Iltimos, fanlardan birini tanlang yoki yangi fanlar qo'shish uchun yuqoridagi tugmani bosing.
           </div>
         )}
       </div>
@@ -214,4 +283,4 @@ console.log(fanId)
   );
 };
 
-export default Dashboard;
+export default Dashboard
