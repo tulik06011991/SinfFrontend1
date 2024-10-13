@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [subjectDetails, setSubjectDetails] = useState(null);
   const [savollar, setsavollar] = useState([]);
   const navigate = useNavigate();
+  const fanId = localStorage.getItem('fanId');
   
   // Axios URL yaratish
   const url = axios.create({
@@ -19,7 +20,6 @@ const Dashboard = () => {
     withCredentials: true,
   });
   
-  const fanId = localStorage.getItem('fanId');
   // Token tekshiruvi va yo'naltirish
   useEffect(() => {
     const token = localStorage.getItem('token');
