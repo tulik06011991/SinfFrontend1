@@ -5,10 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash } from 'react-icons/fa';
 
 const Dashboard = () => {
-
-
-
-  
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,12 +12,14 @@ const Dashboard = () => {
   const [subjectDetails, setSubjectDetails] = useState(null);
   const [savollar, setsavollar] = useState({});
   const navigate = useNavigate();
-  
+
+  // Token tekshiruvi va yo'naltirish
+
   const url = axios.create({
     baseURL: 'https://sinfbackend2.onrender.com',
     withCredentials: true,
   });
-  // Token tekshiruvi va yo'naltirish
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
