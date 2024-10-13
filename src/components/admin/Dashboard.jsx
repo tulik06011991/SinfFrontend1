@@ -12,13 +12,14 @@ const Dashboard = () => {
   const [subjectDetails, setSubjectDetails] = useState(null);
   const [savollar, setsavollar] = useState([]);
   const navigate = useNavigate();
-
+  
   // Axios URL yaratish
   const url = axios.create({
     baseURL: 'https://sinfbackend2.onrender.com',
     withCredentials: true,
   });
-
+  
+  const fanId = localStorage.getItem('fanId');
   // Token tekshiruvi va yo'naltirish
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -34,7 +35,6 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const fanId = localStorage.getItem('fanId');
 
       if (!token) {
         navigate('/');
