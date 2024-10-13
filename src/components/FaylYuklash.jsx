@@ -46,6 +46,7 @@ const UploadFile = () => {
           Authorization: `Bearer ${token}`, // Tokenni yuborish
         },
       });
+console.log(response)
 
       setMessage('Fayl muvaffaqiyatli yuklandi!');
     } catch (error) {
