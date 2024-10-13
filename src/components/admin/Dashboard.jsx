@@ -10,16 +10,16 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectDetails, setSubjectDetails] = useState(null);
-  const [savollar, setsavollar] = useState({});
+  const [savollar, setsavollar] = useState([]);
   const navigate = useNavigate();
 
-  // Token tekshiruvi va yo'naltirish
-
+  // Axios URL yaratish
   const url = axios.create({
     baseURL: 'https://sinfbackend2.onrender.com',
     withCredentials: true,
   });
 
+  // Token tekshiruvi va yo'naltirish
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -42,14 +42,8 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await url.post(
-        `/api/subjects`,
-        { fanId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await url.get(`/api/subjects${fanId}`
+        
       );
 
       setSubjects(response.data.subjects);
@@ -64,74 +58,7 @@ const Dashboard = () => {
     }
   };
 
-  // Foydalanuvchini o'chirish va interfeysdan yangilash
-  const handleDeleteUsers = async (id) => {
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Token topilmadi. Iltimos, qayta login qiling.');
-      }
-
-      // Foydalanuvchini o'chirish so'rovi
-      await url.delete(`/admin/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // O'chirilgan foydalanuvchini interfeysdan olib tashlash
-      const updatedResults = subjectDetails.userResults.filter(
-        (result) => result.userId !== id
-      );
-      setSubjectDetails((prev) => ({
-        ...prev,
-        userResults: updatedResults,
-      }));
-    } catch (err) {
-      console.error('Xatolik yuz berdi:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Savollarni o'chirish va interfeysdan yangilash
-  // Savollarni o'chirish va interfeysdan yangilash
-const handleDelete = async (id) => {
-  setLoading(true);
-
-  try {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      throw new Error('Token topilmadi. Iltimos, qayta login qiling.');
-    }
-
-    await url.delete(`/admin/subjects/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // O'chirilgan savolni interfeysdan olib tashlash
-    const updatedQuestions = savollar.filter((question) => question._id !== id);
-    setsavollar(updatedQuestions);
-
-    // Tanlangan fan bo'yicha savollarni qayta yuklash
-    handleSubjectClick(selectedSubject);
-    
-  } catch (err) {
-    setError("O'chirishda xatolik yuz berdi.");
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  // Tanlangan fan bo'yicha savollarni olish
+  // Tanlangan fanga oid savollarni olish
   const handleSubjectClick = async (subject) => {
     setLoading(true);
     setSelectedSubject(subject);
@@ -140,14 +67,11 @@ const handleDelete = async (id) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await url.get(
-        `/admin/subjects/${subject._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await url.get(`/admin/subjects/${subject._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setsavollar(response.data.questionsWithOptions);
       setSubjectDetails(response.data);
@@ -156,7 +80,7 @@ const handleDelete = async (id) => {
         setError("Savollar topilmadi.");
       }
     } catch (err) {
-      setError("Ma'lumotlarni o'chirgansiz .");
+      setError("Ma'lumotlarni olishda xatolik yuz berdi.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -193,7 +117,7 @@ const handleDelete = async (id) => {
                 onClick={() => handleSubjectClick(subject)}
                 className="cursor-pointer p-4 border border-gray-300 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 text-gray-800"
               >
-                {subject.name}
+                {subject.name} {/* Fan nomi buttonida ko'rinadi */}
               </li>
             ))
           ) : (
@@ -215,7 +139,7 @@ const handleDelete = async (id) => {
                 </tr>
               </thead>
               <tbody>
-                {savollar && savollar.length > 0 ? (
+                {savollar.length > 0 ? (
                   savollar.map((question, index) => (
                     <tr key={index} className="border-b border-gray-300">
                       <td className="px-4 py-2">{question.questionText}</td>
@@ -230,7 +154,7 @@ const handleDelete = async (id) => {
                       </td>
                       <td className="px-4 py-2 text-center">
                         <button
-                          onClick={() => handleDelete(question.questionId)}
+                          onClick={() => handleDelete(question._id)}
                           className="text-red-600 hover:text-red-800"
                         >
                           <FaTrash />
