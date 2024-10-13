@@ -25,8 +25,9 @@ const url = axios.create({
   // Backenddan fanlar ro'yxatini olish uchun useEffect
   useEffect(() => {
     const fetchSubjects = async () => {
+      const id = localStorage.getItem('fanId')
       try {
-        const response = await url.get('/api/subjects',
+        const response = await url.get(`/api/subjects${id}`,
           {
             headers: {
                 Authorization: `Bearer ${token}`
