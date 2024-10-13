@@ -27,7 +27,7 @@ const url = axios.create({
     
     const fetchSubjects = async () => {
       try {
-        const response = await url.get(`/api/subjects`,
+        const response = await url.get(`/api/subject`,
           
         ); // Fanlarni olish
         setSubjects(response.data); // Fanlarni state ga o'rnatamiz
