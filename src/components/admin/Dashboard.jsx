@@ -42,7 +42,7 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await url.get(`/api/subjects${fanId}`
+      const response = await url.get(`/api/subjects/${fanId}`
         
       );
 
