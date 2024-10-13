@@ -24,11 +24,7 @@ const Quiz = () => {
             const token = localStorage.getItem('token')
             try {
                 const response = await url.get('/api/subjects',
-                    {
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                        },
-                      }
+                   
                 ); // Fanlar ro'yxatini olish
                 setSubjects(response.data); // Fanlar ro'yxatini yuklash
             } catch (error) {
