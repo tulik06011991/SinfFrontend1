@@ -24,14 +24,16 @@ const url = axios.create({
 
   // Backenddan fanlar ro'yxatini olish uchun useEffect
   useEffect(() => {
+    
     const fetchSubjects = async () => {
-      const id = localStorage.getItem('fanId')
       try {
-        const response = await url.get(`/api/subjects/${id}`,
-         
+        const response = await url.get(`/api/subjects`,
+          {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
         ); // Fanlarni olish
-        console.log(response)
-        
         setSubjects(response.data); // Fanlarni state ga o'rnatamiz
       } catch (error) {
         console.error('Fanlarni olishda xato:', error);
@@ -45,32 +47,35 @@ const url = axios.create({
     setFile(e.target.files[0]);
   };
 
-  // Formani submit qilganda fayl yuklash funksiyasi
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!selectedSubject || !file) {
       setMessage('Iltimos, fan va faylni tanlang!');
       return;
     }
-
+  
     const formData = new FormData();
     formData.append('file', file); // Faylni FormData ga qo'shamiz
     formData.append('subjectId', selectedSubject); // Tanlangan fan ID'sini qo'shamiz
-
+  
     try {
+      const token = localStorage.getItem('token'); // Tokenni localStorage'dan olamiz
+  
       const response = await url.post('/api/upload', formData, {
         headers: {
-           Authorization: `Bearer ${token}`
-          
+          'Content-Type': 'multipart/form-data', // Fayl yuborilishi kerak bo'lgan format
+          Authorization: `Bearer ${token}`, // Tokenni yuborish
         },
       });
+  
       setMessage('Fayl muvaffaqiyatli yuklandi!');
     } catch (error) {
       console.error('Faylni yuklashda xato:', error);
       setMessage('Faylni yuklashda xato yuz berdi!');
     }
   };
+  
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
