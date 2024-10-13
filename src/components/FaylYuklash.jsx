@@ -30,6 +30,8 @@ const url = axios.create({
         const response = await url.get(`/api/subjects/${id}`,
          
         ); // Fanlarni olish
+        console.log(response)
+        
         setSubjects(response.data); // Fanlarni state ga o'rnatamiz
       } catch (error) {
         console.error('Fanlarni olishda xato:', error);
