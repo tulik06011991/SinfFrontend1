@@ -35,6 +35,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
+console.log(fanId)
 
       if (!token) {
         navigate('/');
