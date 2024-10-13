@@ -27,7 +27,7 @@ const url = axios.create({
     const fetchSubjects = async () => {
       const id = localStorage.getItem('fanId')
       try {
-        const response = await url.get(`/api/subjects${id}`,
+        const response = await url.get(`/api/subjects/${id}`,
          
         ); // Fanlarni olish
         setSubjects(response.data); // Fanlarni state ga o'rnatamiz
