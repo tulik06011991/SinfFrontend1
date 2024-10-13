@@ -28,11 +28,7 @@ const url = axios.create({
       const id = localStorage.getItem('fanId')
       try {
         const response = await url.get(`/api/subjects${id}`,
-          {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
+         
         ); // Fanlarni olish
         setSubjects(response.data); // Fanlarni state ga o'rnatamiz
       } catch (error) {

@@ -21,7 +21,7 @@ const Quiz = () => {
     // Fanlar ro'yxatini olish uchun endpoint
     useEffect(() => {
         const fetchSubjects = async () => {
-            const token = localStorage.getItem('token')
+            
             try {
                 const response = await url.get('/api/subjects',
                    
